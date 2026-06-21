@@ -354,22 +354,32 @@
     }
     const txt = cleanModelText(await AI.generateText(ctx.cfg, ctx.model, prompt, { temperature: ctx.temp }), mc);
     if (!txt) return key === "category" ? { category: out.category, subcategory: out.subcategory } : out[key];
-    if (key === "level") return bestMatch(txt, D.levels).value;
+    const t = lc(txt);
+    if (key === "level") {
+      // find a named level in the response; keep the validated value if none is clearly stated
+      const found = D.levels.find((l) => t.includes(lc(l))) || D.levels.find((l) => t.includes(lc(l.replace(/\s*level/i, ""))));
+      return found || out.level;
+    }
     if (key === "category") {
-      const parts = txt.split(/>|\||\/|,|–|-/).map((s) => s.trim()).filter(Boolean);
-      const cat = bestMatch(parts[0] || txt, D.categories).value;
-      const sub = bestMatch(parts[1] || txt, D.taxonomy[cat] || []).value;
+      // pick the LONGEST category whose name appears in the response ("Personal Development" beats "Development");
+      // never let a weak match override the already-validated category
+      const cat = D.categories.filter((c) => t.includes(lc(c))).sort((a, b) => b.length - a.length)[0] || out.category;
+      const subs = D.taxonomy[cat] || [];
+      const sub = subs.filter((s) => t.includes(lc(s))).sort((a, b) => b.length - a.length)[0]
+        || (subs.includes(out.subcategory) ? out.subcategory : subs[0]);
       return { category: cat, subcategory: sub };
     }
     if (key === "title") return truncateChars(txt, L.titleMax);
     if (key === "subtitle") return truncateChars(txt, L.subtitleMax);
     if (key === "description") return await fitDescription(ensureAIPrefix(txt), { cfg: ctx.cfg, model: ctx.model, temp: ctx.temp, doc: ctx.doc, name: ctx.profName, from: ctx.fromName, title: out.title });
     if (key === "welcomeMessage" || key === "congratulationsMessage") {
-      let m = txt;
-      if (!includesAll(m, [out.title, ctx.profName, ctx.fromName])) {
-        if (!lc(m).includes(lc(out.title))) m += key === "welcomeMessage" ? ` Thank you for enrolling in “${out.title}”.` : ` Thank you for completing “${out.title}”.`;
-        if (!lc(m).includes(lc(ctx.profName)) || !lc(m).includes(lc(ctx.fromName))) m += `\n\n— ${ctx.profName}` + (ctx.fromName && ctx.fromName !== ctx.profName ? `, from ${ctx.fromName}` : "");
-      }
+      // guarantee the course name + profile are present (the custom prompt may omit them)
+      let m = (txt || "").trim();
+      const titleHead = (out.title || "").split(/[:\-–—]/)[0].trim();
+      const hasCourse = lc(m).includes(lc(out.title)) || (titleHead.length > 3 && lc(m).includes(lc(titleHead)));
+      const hasWho = lc(m).includes(lc(ctx.profName)) || (ctx.fromName && lc(m).includes(lc(ctx.fromName)));
+      if (!hasCourse) m += key === "welcomeMessage" ? ` Welcome to “${out.title}”.` : ` Thank you for completing “${out.title}”.`;
+      if (!hasWho) m += `\n\n— ${ctx.profName}${ctx.fromName && ctx.fromName !== ctx.profName ? `, from ${ctx.fromName}` : ""}`;
       return m.slice(0, L.messageMax);
     }
     return txt;

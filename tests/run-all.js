@@ -299,6 +299,39 @@ function testDescriptionClean() {
 }
 
 // ============================================================
+async function testCustomFieldRobust() {
+  S("1i. customField robustness (category longest-match, message mentions)");
+  const main = {
+    title: "My Course", subtitle: "Sub", description: Prompts.AI_PREFIX + " " + Array(300).fill("word").join(" "),
+    level: "intermediate", category: "business", subcategory: "sales", primarilyTaught: "x",
+    objectives: ["a", "b", "c", "d"], requirements: ["r"], audience: ["aud"],
+    welcomeMessage: "Welcome to My Course from Acme.", congratulationsMessage: "Congrats on My Course from Acme.", curriculum: []
+  };
+  const stub = await startStubLocal((req, res) => {
+    if (req.url !== "/api/generate") { res.writeHead(200, { "content-type": "application/json" }); res.end(JSON.stringify({ models: [{ name: "m" }] })); return; }
+    let b = ""; req.on("data", (d) => (b += d)); req.on("end", () => {
+      let body = {}; try { body = JSON.parse(b); } catch (_) {}
+      const p = body.prompt || "";
+      let response;
+      if (body.format === "json") response = JSON.stringify(main);
+      else if (/Category & sub-category/.test(p)) response = "I recommend Personal Development > Leadership for this course."; // contains 'Development' AND 'Personal Development'
+      else if (/Congratulations message/.test(p)) response = "Great job finishing the course! You did it."; // no profile name on purpose
+      else response = "ok";
+      res.writeHead(200, { "content-type": "application/json" }); res.end(JSON.stringify({ response }));
+    });
+  });
+  const profile = { id: "p1", name: "Acme", fromName: "Acme Team", fields: {
+    category: { en: true, prompt: "pick the single best category and sub-category" },
+    congratulationsMessage: { en: true, prompt: "write an uplifting congratulations message" }
+  } };
+  const c = await Generator.run(stub.url, "m", "doc text", profile, {}, "improve");
+  check("category picks longest match (Personal Development, not Development)", c.category === "Personal Development", c.category);
+  check("subcategory matched within chosen category", c.subcategory === "Leadership", c.subcategory);
+  check("congrats message gets profile name appended when omitted", /acme/i.test(c.congratulationsMessage), c.congratulationsMessage.slice(-40));
+  stub.srv.close();
+}
+
+// ============================================================
 function testCleaning() {
   S("1b. Message cleaning (placeholders + preamble)");
   const ctx = { name: "Khurram", from: "Nexus Life Academy", title: "Relationship Management Skills" };
@@ -849,6 +882,7 @@ async function testOptions() {
   await testGeneration();
   await testExtractMode();
   await testFieldConfig();
+  await testCustomFieldRobust();
   await testOpenAI();
   await testCurriculumFullExtraction();
   testCurriculumTextParse();
