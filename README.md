@@ -1,4 +1,14 @@
-# Udemy Outline Course Assistant — v2.7.0 · by Veloxa Labs
+# Udemy Outline Course Assistant — v3.0.0 · by Veloxa Labs
+
+> **Repo:** https://github.com/khurram5509/Veloxa-Udemy-Outline-Course-Assistant
+>
+> **Install:** `git clone` (or download ZIP) → `chrome://extensions` → enable Developer mode →
+> **Load unpacked** → select this folder.
+>
+> **Updating:** the extension checks this repo for new versions and shows an "Update available"
+> badge/banner. To update, run `git pull` (or re-download), then click the reload ↻ on the
+> extension at `chrome://extensions` (unpacked extensions can't self-install). Toggle the
+> auto-check in **Settings → About → Updates**.
 
 A Chrome (Manifest V3) extension that fills a Udemy course's **Intended learners**,
 **Course landing page**, and **Course messages** forms automatically from a document file,
