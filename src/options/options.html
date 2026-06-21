@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Outline Course Assistant — Settings</title>
+  <link rel="stylesheet" href="options.css" />
+</head>
+<body>
+  <div class="wrap">
+    <h1><span class="logo">U</span> Udemy Outline Course Assistant <span class="ver" id="verLabel"></span></h1>
+
+    <nav class="tabs" id="tabs">
+      <button class="tab active" data-tab="settings">Settings</button>
+      <button class="tab" data-tab="help">Help &amp; Setup</button>
+      <button class="tab" data-tab="about">About</button>
+      <button class="tab" data-tab="privacy">Privacy</button>
+    </nav>
+
+    <!-- ========================= SETTINGS ========================= -->
+    <section id="tab-settings" class="panel active">
+      <section class="card">
+        <h2>AI provider</h2>
+        <label class="field">
+          <span>Use</span>
+          <select id="provider">
+            <option value="ollama">Ollama (local — private, free)</option>
+            <option value="openai">ChatGPT (OpenAI — needs an API key)</option>
+          </select>
+        </label>
+        <label class="field" id="ollamaUrlField">
+          <span>Ollama server URL</span>
+          <input id="ollamaUrl" type="text" placeholder="http://localhost:11434" />
+        </label>
+        <label class="field" id="openaiKeyField" hidden>
+          <span>OpenAI API key</span>
+          <input id="openaiApiKey" type="password" placeholder="sk-..." autocomplete="off" />
+        </label>
+        <p class="note" id="openaiNote" hidden>⚠ With ChatGPT, your course document is sent to OpenAI’s servers (not local). Your key is stored only on this device. Get a key at <code>platform.openai.com/api-keys</code>.</p>
+        <div class="row">
+          <label class="field grow">
+            <span>Default model</span>
+            <select id="defaultModel"></select>
+          </label>
+          <label class="field">
+            <span>Creativity (temperature)</span>
+            <input id="temperature" type="number" min="0" max="1" step="0.1" />
+          </label>
+        </div>
+        <div class="row">
+          <button id="testBtn" class="secondary" type="button">Test connection</button>
+          <span id="testResult" class="test"></span>
+        </div>
+        <p class="note" id="corsNote" hidden>
+          A “blocked / 403” is normally handled automatically (the extension removes the
+          <code>Origin</code> header). If you see it, fully reload the extension at
+          <code>chrome://extensions</code>. As a last resort start Ollama with
+          <code>OLLAMA_ORIGINS=*</code> — see the <strong>Help &amp; Setup</strong> tab for macOS/Windows commands.
+        </p>
+      </section>
+
+      <section class="card">
+        <h2>Filling behaviour</h2>
+        <label class="checkbox">
+          <input id="autoSave" type="checkbox" />
+          <span>Click “Save” on each page automatically after filling</span>
+        </label>
+        <label class="checkbox">
+          <input id="overwrite" type="checkbox" />
+          <span>Overwrite fields that already contain text (uncheck to keep existing values)</span>
+        </label>
+        <label class="checkbox">
+          <input id="haltOnError" type="checkbox" />
+          <span>Don’t move to the next page until the current page is filled &amp; verified (stop on error)</span>
+        </label>
+        <label class="checkbox">
+          <input id="fillCurriculum" type="checkbox" />
+          <span>Also build the <strong>Curriculum</strong> (creates sections &amp; lectures on <code>/manage/curriculum</code>) — off by default</span>
+        </label>
+        <label class="checkbox">
+          <input id="dedupeCurriculum" type="checkbox" />
+          <span>Remove <strong>duplicate lectures</strong> from the curriculum before filling <em>(deletes repeated lecture titles — off by default)</em></span>
+        </label>
+      </section>
+
+      <section class="card">
+        <div class="card-head">
+          <h2>Profiles</h2>
+          <div class="row" style="gap:8px">
+            <button id="loadStarters" class="secondary" type="button" title="Add the 6 ready-made instructor profiles">+ Starter profiles (6)</button>
+            <button id="addProfile" class="secondary" type="button">+ Add profile</button>
+          </div>
+        </div>
+        <p class="note">A profile’s <strong>name</strong> and <strong>“from” label</strong> are woven into the Welcome &amp; Congratulations messages along with the course name.</p>
+        <div id="profileList" class="profiles"></div>
+      </section>
+
+      <div class="actions">
+        <button id="saveBtn" class="primary" type="button">Save settings</button>
+        <span id="savedMsg" class="saved"></span>
+      </div>
+    </section>
+
+    <!-- ========================= HELP ========================= -->
+    <section id="tab-help" class="panel">
+      <section class="card">
+        <h2>Quick start (5 steps)</h2>
+        <ol class="steps">
+          <li>Install <strong>Ollama</strong> (local AI) — see below for macOS / Windows / Linux.</li>
+          <li>Download at least one <strong>AI model</strong> (e.g. <code>ollama pull llama3.1</code>).</li>
+          <li>Load this extension in Chrome (<code>chrome://extensions</code> → Developer mode → Load unpacked).</li>
+          <li>Open the extension’s <strong>Settings</strong> → add a <strong>Profile</strong> → <strong>Test connection</strong>.</li>
+          <li>On your Udemy course page, open the extension, generate content, then <strong>Start auto-fill</strong>.</li>
+        </ol>
+      </section>
+
+      <section class="card">
+        <h2>Choosing an AI provider</h2>
+        <ul class="faq">
+          <li><strong>Ollama (local)</strong> — free and fully private; runs on your computer. Follow steps 1–3 below.</li>
+          <li><strong>ChatGPT (OpenAI)</strong> — no local install; paste your API key in <strong>Settings → AI provider</strong>. Your document is sent to OpenAI. Get a key at <code>platform.openai.com/api-keys</code>. Skip to step 4.</li>
+        </ul>
+      </section>
+
+      <section class="card">
+        <h2>1 · Install Ollama</h2>
+
+        <h3>macOS</h3>
+        <p class="note">Option A — download the app:</p>
+        <pre><code>Visit https://ollama.com/download → download Ollama for macOS →
+open the .zip and drag Ollama to Applications → launch it
+(it runs in the menu bar and starts the server automatically).</code></pre>
+        <p class="note">Option B — Homebrew:</p>
+        <pre><code>brew install ollama
+ollama serve        # starts the local server (or just launch the app)</code></pre>
+
+        <h3>Windows</h3>
+        <pre><code>Visit https://ollama.com/download → download "Ollama for Windows" →
+run OllamaSetup.exe → Ollama starts automatically in the background.</code></pre>
+
+        <h3>Linux</h3>
+        <pre><code>curl -fsSL https://ollama.com/install.sh | sh
+ollama serve</code></pre>
+
+        <p class="note">Verify it’s running — open a terminal and run:</p>
+        <pre><code>ollama --version
+curl http://localhost:11434/api/tags</code></pre>
+      </section>
+
+      <section class="card">
+        <h2>2 · Download AI models</h2>
+        <p class="note">Run these in a terminal (macOS: Terminal · Windows: PowerShell or CMD):</p>
+        <pre><code># Recommended — best quality for this task (~4.7 GB)
+ollama pull llama3.1
+
+# Lighter / faster option (~1 GB)
+ollama pull qwen2.5
+
+# See what you have installed
+ollama list
+
+# Test a model quickly
+ollama run llama3.1 "Write one sentence about online courses."</code></pre>
+        <p class="note">In the extension you can pick any installed model from the dropdown (or set a default here in Settings).</p>
+      </section>
+
+      <section class="card">
+        <h2>3 · If the model dropdown is empty (403 / blocked)</h2>
+        <p class="note">The extension removes the browser <code>Origin</code> header automatically, so this is rare. If it still happens, allow the extension explicitly and restart Ollama:</p>
+        <h3>macOS</h3>
+        <pre><code>launchctl setenv OLLAMA_ORIGINS "*"
+# then quit Ollama from the menu bar and reopen it
+# (or, if you run it from a terminal:)
+export OLLAMA_ORIGINS="*"
+ollama serve</code></pre>
+        <h3>Windows (PowerShell)</h3>
+        <pre><code>setx OLLAMA_ORIGINS "*"
+# then fully quit Ollama (system tray) and start it again</code></pre>
+        <p class="note">After changing this, fully reload the extension at <code>chrome://extensions</code>.</p>
+      </section>
+
+      <section class="card">
+        <h2>4 · Load &amp; use the extension</h2>
+        <ol class="steps">
+          <li>Go to <code>chrome://extensions</code>, turn on <strong>Developer mode</strong> (top-right).</li>
+          <li>Click <strong>Load unpacked</strong> and select this extension’s folder.</li>
+          <li>Pin the extension, open its <strong>Settings</strong>, add a profile and click <strong>Test connection</strong>.</li>
+          <li>Open your Udemy course’s management page (<code>…/manage/…</code>).</li>
+          <li>Click the extension icon → pick a profile &amp; model → upload your course document.</li>
+          <li>Choose how to generate the content:
+            <ul class="faq" style="margin-top:4px">
+              <li><strong>Analyze &amp; Improve with Ollama</strong> — AI rewrites, expands &amp; polishes.</li>
+              <li><strong>Parse with Ollama (no improvement)</strong> — AI maps your <em>exact</em> wording into the fields.</li>
+              <li><strong>Parse &amp; fill directly (no AI)</strong> — local, offline, straight from the document’s sections.</li>
+            </ul>
+          </li>
+          <li>Review/edit the preview, then click <strong>Start auto-fill</strong> (all 3 pages) or <strong>Fill current page only</strong>.</li>
+        </ol>
+        <p class="note">Works the same on macOS, Windows, and Linux — only the Ollama install commands differ.</p>
+      </section>
+
+      <section class="card">
+        <h2>Troubleshooting</h2>
+        <ul class="faq">
+          <li><strong>“Ollama not reachable”</strong> — make sure Ollama is running (<code>ollama serve</code> or the app) and the URL in Settings is <code>http://localhost:11434</code>.</li>
+          <li><strong>Model dropdown empty / 403</strong> — see step 3 above, then reload the extension.</li>
+          <li><strong>“content script not ready / could not fill”</strong> — refresh the Udemy page and try again; make sure you’re on a <code>…/manage/…</code> page.</li>
+          <li><strong>A field didn’t fill</strong> — the activity log names the exact field; with “stop on error” on, the run halts so you can fix it.</li>
+          <li><strong>Description too short</strong> — use “Analyze &amp; Improve” (AI expands it to 250–350 words); direct parse fills only what’s in the document.</li>
+        </ul>
+      </section>
+    </section>
+
+    <!-- ========================= ABOUT ========================= -->
+    <section id="tab-about" class="panel">
+      <section class="card about">
+        <div class="brandblock">
+          <span class="logo lg">U</span>
+          <div>
+            <h2 style="margin:0">Udemy Outline Course Assistant</h2>
+            <p class="note" style="margin:4px 0 0">Version <span id="verAbout"></span> · by <strong>Veloxa Labs</strong></p>
+          </div>
+        </div>
+        <p>Udemy Outline Course Assistant turns a course outline document into a fully-filled Udemy
+        course — Intended Learners, Course Landing Page, and Course Messages — using a
+        <strong>local Ollama AI model</strong> so your content never leaves your computer.</p>
+        <h3>What it does</h3>
+        <ul class="faq">
+          <li>Reads your <code>.docx</code>, <code>.pdf</code>, <code>.txt</code>, or <code>.md</code> outline.</li>
+          <li>Generates and improves polished, Udemy-ready content with your local AI (or parses directly, no AI).</li>
+          <li>Auto-fills and verifies each page, with full activity logging.</li>
+          <li>Manages multiple instructor profiles and respects Udemy’s field limits.</li>
+        </ul>
+        <h3>Built by Veloxa Labs</h3>
+        <p class="note">Veloxa Labs builds practical, privacy-first automation tools for creators and educators.
+        For support or feedback, contact <a id="supportLink" href="mailto:">us</a>.</p>
+        <p class="note">© <span id="yearLabel"></span> Veloxa Labs. All rights reserved.</p>
+      </section>
+
+      <section class="card">
+        <h2>Updates</h2>
+        <p class="note">Installed version: <strong id="curVer"></strong> · <span id="updateStatus" class="test">—</span></p>
+        <label class="checkbox">
+          <input id="autoUpdateCheck" type="checkbox" />
+          <span>Automatically check GitHub for new versions</span>
+        </label>
+        <div class="row">
+          <button id="checkUpdateBtn" class="secondary" type="button">Check for updates</button>
+          <a id="repoLink" href="#" target="_blank" rel="noopener" class="link-btn" style="align-self:center">View on GitHub ↗</a>
+        </div>
+        <p class="note" id="updateHow" hidden>
+          This extension is installed unpacked, so updates aren't automatic. To update: pull the latest from
+          the repo (<code>git pull</code>) or download it, then open <code>chrome://extensions</code> and click
+          the reload ↻ on this extension.
+        </p>
+      </section>
+    </section>
+
+    <!-- ========================= PRIVACY ========================= -->
+    <section id="tab-privacy" class="panel">
+      <section class="card">
+        <h2>Privacy Policy</h2>
+        <p class="note">Last updated: 21 June 2026 · by Veloxa Labs</p>
+
+        <h3>Where your content goes depends on the AI provider you choose</h3>
+        <p>With <strong>Ollama (local)</strong> — the default — everything is processed <strong>on your own
+        computer</strong> (<code>http://localhost:11434</code>). Nothing leaves your machine.</p>
+        <p>If you switch to <strong>ChatGPT (OpenAI)</strong>, your course document and the generated content
+        are sent to <strong>OpenAI’s servers</strong> (<code>api.openai.com</code>) for processing, subject to
+        OpenAI’s privacy policy. Your OpenAI API key is stored only on this device and is sent only to OpenAI.</p>
+        <p>Either way, nothing is sent to <strong>Veloxa Labs</strong> or any other third party, and there are
+        no analytics, trackers, or telemetry.</p>
+
+        <h3>What is stored, and where</h3>
+        <ul class="faq">
+          <li><strong>Profiles &amp; settings</strong> — saved in Chrome’s local extension storage on your device.</li>
+          <li><strong>Generated content</strong> — kept locally so you can review/reuse it; you can clear it any time.</li>
+          <li><strong>Activity log</strong> — stored locally for troubleshooting; clear it from the popup.</li>
+        </ul>
+        <p class="note">Uninstalling the extension removes this local data.</p>
+
+        <h3>Permissions &amp; why they’re needed</h3>
+        <ul class="faq">
+          <li><code>storage</code> — save your profiles, settings, and logs locally.</li>
+          <li><code>scripting</code> / <code>tabs</code> — open and fill the Udemy course pages you ask it to.</li>
+          <li><code>declarativeNetRequest</code> — adjust the request header to your <em>local</em> Ollama so the browser allows it.</li>
+          <li>Host access to <code>udemy.com</code> and <code>localhost:11434</code> — to fill your course and talk to your local AI. No other sites are accessed.</li>
+        </ul>
+
+        <h3>Udemy</h3>
+        <p>The extension fills forms on Udemy using your own logged-in session, exactly as if you typed the
+        content yourself. It does not collect or transmit your Udemy credentials.</p>
+
+        <h3>Contact</h3>
+        <p class="note">Questions about privacy? Email <a id="supportLink2" href="mailto:">Veloxa Labs</a>.</p>
+      </section>
+    </section>
+  </div>
+
+  <template id="profileTpl">
+    <div class="profile">
+      <div class="row">
+        <label class="field grow">
+          <span>Profile name</span>
+          <input class="p-name" type="text" placeholder="e.g. Khurram / Veloxa Academy" />
+        </label>
+        <label class="field grow">
+          <span>Messages are “from”</span>
+          <input class="p-from" type="text" placeholder="e.g. The Veloxa Team" />
+        </label>
+        <button class="del icon-btn" type="button" title="Remove">✕</button>
+      </div>
+      <label class="field">
+        <span>Role / signature <em>(optional, helps tone)</em></span>
+        <input class="p-role" type="text" placeholder="e.g. Lead Instructor, AI &amp; Automation" />
+      </label>
+      <details class="fieldcfg">
+        <summary>Field prompts &amp; on/off <em>(used by “Analyze &amp; Improve with Ollama”)</em></summary>
+        <p class="note">Each field starts with a relevant default prompt. Leave it as-is to use the fast built-in improvement; <strong>edit</strong> it to give that field your own instructions (an edited prompt runs as one extra AI call when you Analyze &amp; Improve). Toggle a field off to skip it entirely for this profile.</p>
+        <div class="field-list"></div>
+      </details>
+    </div>
+  </template>
+
+  <template id="fieldRowTpl">
+    <div class="frow">
+      <label class="ftoggle"><input type="checkbox" class="f-en" /><span class="f-label"></span></label>
+      <textarea class="f-prompt" rows="1" placeholder="Default improvement prompt"></textarea>
+    </div>
+  </template>
+
+  <script src="../lib/udemy-data.js"></script>
+  <script src="../lib/seed-profiles.js"></script>
+  <script src="../lib/version.js"></script>
+  <script src="options.js"></script>
+</body>
+</html>

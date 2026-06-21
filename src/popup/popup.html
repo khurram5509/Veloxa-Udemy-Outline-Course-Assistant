@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <link rel="stylesheet" href="popup.css" />
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <span class="logo">U</span>
+      <div>
+        <h1>Outline Course Assistant</h1>
+        <small id="ollamaStatus" class="status">Checking Ollama…</small>
+      </div>
+    </div>
+    <button id="settingsBtn" class="icon-btn" title="Settings">⚙</button>
+  </header>
+
+  <main>
+    <div id="updateBanner" class="update-banner" hidden></div>
+    <div class="step"><span class="step-num">1</span> Set up</div>
+    <label class="field">
+      <span>Profile</span>
+      <div class="row">
+        <select id="profileSelect"></select>
+        <button id="manageProfiles" class="link-btn" type="button">Manage</button>
+      </div>
+    </label>
+
+    <label class="field">
+      <span>Ollama model</span>
+      <select id="modelSelect"></select>
+    </label>
+
+    <label class="field">
+      <span>Course document <em>(.docx, .pdf, .txt, .md)</em> or ready-made <em>.json</em></span>
+      <input id="fileInput" type="file" accept=".docx,.pdf,.txt,.md,.markdown,.json,text/plain,application/json" />
+      <small id="fileInfo" class="muted"></small>
+    </label>
+
+    <div class="step"><span class="step-num">2</span> Generate content</div>
+    <button id="analyzeBtn" class="primary" disabled>✨ Analyze &amp; Improve with Ollama</button>
+    <button id="parseOllamaBtn" class="secondary-btn" disabled>Parse with Ollama (no improvement)</button>
+    <button id="parseBtn" class="secondary-btn" disabled>Parse &amp; fill directly (no AI)</button>
+    <p id="genHint" class="muted hint" style="margin:0">1 = AI improves &amp; expands · 2 = AI maps your exact words · 3 = no AI, straight from sections.</p>
+
+    <section id="preview" class="preview" hidden>
+      <div class="preview-head">
+        <span>AI-generated content <em>(editable)</em></span>
+        <button id="reanalyzeBtn" class="link-btn" type="button">Re-analyze</button>
+      </div>
+
+      <label class="pfield"><span>Course title <i id="cTitle" class="count"></i></span>
+        <input id="fTitle" type="text" maxlength="60" /></label>
+      <label class="pfield"><span>Subtitle <i id="cSubtitle" class="count"></i></span>
+        <input id="fSubtitle" type="text" maxlength="120" /></label>
+      <label class="pfield"><span>Description <i id="cDesc" class="count"></i></span>
+        <textarea id="fDescription" rows="6"></textarea></label>
+      <div class="row3">
+        <label class="pfield"><span>Level</span><input id="fLevel" type="text" /></label>
+        <label class="pfield"><span>Category</span><input id="fCategory" type="text" /></label>
+        <label class="pfield"><span>Sub-category</span><input id="fSubcategory" type="text" /></label>
+      </div>
+      <label class="pfield"><span>Primarily taught</span><input id="fPrimary" type="text" /></label>
+      <label class="pfield"><span>What will students learn in your course? <em>(one per line, min 4)</em></span>
+        <textarea id="fObjectives" rows="5"></textarea></label>
+      <label class="pfield"><span>What are the requirements or prerequisites for taking your course? <em>(one per line)</em></span>
+        <textarea id="fRequirements" rows="3"></textarea></label>
+      <label class="pfield"><span>Who is this course for? <em>(one per line)</em></span>
+        <textarea id="fAudience" rows="3"></textarea></label>
+      <label class="pfield"><span>Welcome message</span><textarea id="fWelcome" rows="3"></textarea></label>
+      <label class="pfield"><span>Congratulations message</span><textarea id="fCongrats" rows="3"></textarea></label>
+      <label class="pfield"><span>Curriculum <em>(one section per line — <code>Title :: Lecture; Lecture</code>; only fills if enabled in Settings)</em></span>
+        <textarea id="fCurriculum" rows="5"></textarea></label>
+    </section>
+
+    <div class="step"><span class="step-num">3</span> Fill your course</div>
+    <button id="fillBtn" class="primary" disabled>Start auto-fill (all 3 pages)</button>
+    <button id="fillCurrentBtn" class="secondary-btn" disabled>Fill current page only</button>
+    <p id="hint" class="muted hint">Open your Udemy course manage page, then click Start.</p>
+
+    <section class="logs">
+      <div class="logs-head">
+        <span>Activity log</span>
+        <button id="clearLogs" class="link-btn" type="button">Clear</button>
+      </div>
+      <div id="logList" class="log-list"></div>
+    </section>
+  </main>
+
+  <!-- libs: order matters -->
+  <script src="../vendor/mammoth.browser.min.js"></script>
+  <script src="../vendor/pdf.min.js"></script>
+  <script src="../lib/logger.js"></script>
+  <script src="../lib/udemy-data.js"></script>
+  <script src="../lib/urls.js"></script>
+  <script src="../lib/extractor.js"></script>
+  <script src="../lib/parser.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>

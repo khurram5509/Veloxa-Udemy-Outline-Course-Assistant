@@ -1,0 +1,17 @@
+{
+  "name": "veloxa-udemy-outline-course-assistant",
+  "version": "1.0.0",
+  "description": "A Chrome (Manifest V3) extension that fills a Udemy course's **Intended learners**, **Course landing page**, and **Course messages** forms automatically from a document file, using a **local Ollama** model. No data leaves your machine.",
+  "main": "test-harness.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "jsdom": "^24.1.3",
+    "mammoth": "^1.12.0"
+  }
+}

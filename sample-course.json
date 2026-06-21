@@ -1,0 +1,45 @@
+{
+  "title": "Self-Awareness Mastery: Understand Yourself & Relate Better",
+  "subtitle": "Master self-awareness, emotional intelligence and stronger relationships in everyday life",
+  "description": "This course contains the use of artificial intelligence. Do you want to understand yourself on a deeper level and build stronger, more meaningful relationships? Self-Awareness Mastery is a complete, structured program designed to help you uncover the patterns, triggers and beliefs that shape how you think, feel and connect with others. Across practical modules you will learn the science behind self-awareness, how to recognise emotional triggers, and how to develop the emotional intelligence that underpins healthy personal and professional relationships. You will practise real techniques for communication, conflict resolution and navigating complex relationships, with reflective exercises after every lesson. By the end of the course you will have a clear, repeatable framework for understanding your own behaviour, responding rather than reacting, and showing up as your best self in every relationship. No prior knowledge is required, only an open mind and a willingness to grow. Whether you are a leader, a parent, a professional or simply someone committed to personal growth, this course gives you the tools and confidence to transform the way you relate to yourself and the people around you.",
+  "level": "Intermediate Level",
+  "category": "Personal Development",
+  "subcategory": "Self Esteem & Confidence",
+  "primarilyTaught": "Self-Awareness & Relationships",
+  "objectives": [
+    "Understand the science behind self-awareness and its role in personal growth",
+    "Recognise the patterns, triggers and beliefs that shape your behaviour",
+    "Develop emotional intelligence to improve your relationships",
+    "Apply practical techniques for communication and conflict resolution",
+    "Build a repeatable framework for responding instead of reacting"
+  ],
+  "requirements": [
+    "No prior knowledge required",
+    "An open mind and a willingness to learn"
+  ],
+  "audience": [
+    "Leaders and professionals seeking personal growth",
+    "Parents looking to improve family relationships",
+    "Anyone committed to self-improvement"
+  ],
+  "welcomeMessage": "Welcome to Self-Awareness Mastery! I'm ISO Xpert, your instructor on this journey to understanding yourself and building better relationships. Dive in, take your time with the exercises, and enjoy the process.",
+  "congratulationsMessage": "Congratulations on completing Self-Awareness Mastery! You've done the work, and it shows. Keep practising what you've learned — and thank you for learning with ISO Xpert.",
+  "curriculum": [
+    {
+      "title": "Module 1: Introduction to Self-Awareness",
+      "lectures": [
+        "What is Self-Awareness?",
+        "The Science Behind Self-Awareness",
+        "Benefits of Developing Self-Awareness"
+      ]
+    },
+    {
+      "title": "Module 2: The Foundation of Relationships",
+      "lectures": [
+        "Why Relationships Matter",
+        "The Connection Between Self and Others",
+        "Giving Your Best in Every Relationship"
+      ]
+    }
+  ]
+}
